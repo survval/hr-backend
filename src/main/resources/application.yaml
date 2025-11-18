@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hrdb
+    username: hr
+    password: hr
+  jpa:
+    hibernate:
+      ddl-auto: none   # Liquibase owns the schema
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+
+jwt:
+  secret: "0d530d3bf8d74f04b9db11ef538ea319459f31c6fedb4c89bb72955fe5e6289b"
+  issuer: "smarthireflow"
+  expiration-minutes: 480
+
+# Optional profile for local CORS
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+cors:
+  allowed-origins:
+    - "http://localhost:3000"
