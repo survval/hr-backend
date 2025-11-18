@@ -23,7 +23,9 @@ spring:
   web:
     cors:
       allowed-origins:
-        - "https://hr-management-system-7z2x-7myzc4lqh-sureshs-projects-bb8d14dd.vercel.app"   # <-- replace with real Vercel URL
+        - "https://hr-management-system-ashen.vercel.app"
+        - "https://hr-management-system-git-main-sureshs-projects-bb8d14dd.vercel.app"
+        - "https://hr-management-system-3jzor0lmw-sureshs-projects-bb8d14dd.vercel.app"   # <-- replace with real Vercel URL
       allowed-methods:
         - GET
         - POST
