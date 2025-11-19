@@ -22,10 +22,14 @@ spring:
 
   web:
     cors:
-      allowed-origins:
-        - "https://hr-management-system-ashen.vercel.app"
-        - "https://hr-management-system-git-main-sureshs-projects-bb8d14dd.vercel.app"
-        - "https://hr-management-system-3jzor0lmw-sureshs-projects-bb8d14dd.vercel.app"   # <-- replace with real Vercel URL
+      # Use patterns instead of a fixed list so any new vercel.app deployment works
+      allowed-origin-patterns:
+        - "https://*.vercel.app"      # allow all Vercel preview/production apps
+      # or, if you prefer explicit origins, replace with your real domains:
+      # allowed-origins:
+      #   - "https://hr-management-system.vercel.app"
+      #   - "https://hr-management-system-git-main-yourusername.vercel.app"
+
       allowed-methods:
         - GET
         - POST
