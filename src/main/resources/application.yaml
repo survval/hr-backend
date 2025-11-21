@@ -1,11 +1,13 @@
 server:
-  port: 8081
+  # Bind to platform-provided port if present (Heroku/Render/etc.) default to 8080
+  port: ${PORT:8080}
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/hrdb
-    username: hr
-    password: hr
+    # Use env vars with sensible defaults (works locally and in Docker/Cloud)
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:hrdb}
+    username: ${DB_USER:hr}
+    password: ${DB_PASSWORD:hr}
   jpa:
     hibernate:
       ddl-auto: none   # Liquibase owns the schema

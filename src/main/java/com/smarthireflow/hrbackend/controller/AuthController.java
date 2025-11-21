@@ -1,4 +1,4 @@
-package com.smarthireflow.hrbackend.web;
+package com.smarthireflow.hrbackend.controller;
 
 import com.smarthireflow.hrbackend.security.JwtService;
 import com.smarthireflow.hrbackend.user.entity.UserEntity;

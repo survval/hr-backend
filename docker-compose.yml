@@ -11,6 +11,33 @@ services:
       POSTGRES_PASSWORD: hr
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hr -d hrdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hr-backend:latest
+    container_name: hr-backend
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: hrdb
+      DB_USER: hr
+      DB_PASSWORD: hr
+      # Uncomment to run with prod profile when using a managed Postgres with SSL enabled
+      # SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

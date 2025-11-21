@@ -20,6 +20,10 @@ public class UserService {
         return repo.findByEmail(email);
     }
 
+    public boolean existsByEmailAndIdNot(String email, Long id) {
+        return repo.existsByEmailAndIdNot(email, id);
+    }
+
     public long count() {
         return repo.count();
     }

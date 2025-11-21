@@ -5,15 +5,15 @@ WORKDIR /app
 # Copy everything (including build.gradle / build.gradle.kts, settings.gradle(.kts), src, gradlew, etc.)
 COPY . .
 
-# Build the Spring Boot fat jar
-RUN ./gradlew --no-daemon clean bootJar
+# Build the Spring Boot fat jar using the Gradle installed in the image (avoids wrapper exec perms issues)
+RUN gradle --no-daemon clean bootJar
 
 # ==== 2) Runtime stage ====
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy the built jar from the Gradle stage
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/app.jar app.jar
 
 # JVM options (tune for small containers)
 ENV JAVA_OPTS="-Xms256m -Xmx512m"

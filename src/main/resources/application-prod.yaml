@@ -22,13 +22,11 @@ spring:
 
   web:
     cors:
-      # Use patterns instead of a fixed list so any new vercel.app deployment works
+      # Allow all Vercel preview/production apps (and live tunnels)
       allowed-origin-patterns:
-        - "https://*.vercel.app"      # allow all Vercel preview/production apps
-      # or, if you prefer explicit origins, replace with your real domains:
-      # allowed-origins:
-      #   - "https://hr-management-system.vercel.app"
-      #   - "https://hr-management-system-git-main-yourusername.vercel.app"
+        - "https://*.vercel.app"
+        - "https://*.vercel.live"
+      # If you prefer explicit origins, replace patterns with allowed-origins above.
 
       allowed-methods:
         - GET
@@ -36,6 +34,18 @@ spring:
         - PUT
         - DELETE
         - OPTIONS
+        - PATCH
+        - HEAD
       allowed-headers:
         - "*"
       allow-credentials: true
+      max-age: 3600
+      # Optionally expose headers if frontend needs to read them:
+      # exposed-headers:
+      #   - Authorization
+      #   - WWW-Authenticate
+
+jwt:
+  secret: ${JWT_SECRET:0d530d3bf8d74f04b9db11ef538ea319459f31c6fedb4c89bb72955fe5e6289b}
+  issuer: ${JWT_ISSUER:smarthireflow}
+  expiration-minutes: ${JWT_EXP_MINUTES:480}

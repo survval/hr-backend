@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0003-add-profile-fields
+      author: junie
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: department
+                  type: VARCHAR(255)
+              - column:
+                  name: phone
+                  type: VARCHAR(64)
+              - column:
+                  name: address
+                  type: VARCHAR(512)
+              - column:
+                  name: avatar
+                  type: BYTEA
+              - column:
+                  name: avatar_content_type
+                  type: VARCHAR(128)
+              - column:
+                  name: two_factor_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: two_factor_secret
+                  type: VARCHAR(128)

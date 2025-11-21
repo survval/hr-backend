@@ -2,6 +2,7 @@ package com.smarthireflow.hrbackend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -32,6 +33,8 @@ public class SecurityConfig {
       .cors(Customizer.withDefaults())
       .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth -> auth
+          // Always allow CORS preflight requests
+          .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
           .requestMatchers("/auth/**").permitAll()
           .requestMatchers(HttpMethod.GET, "/health").permitAll()
           .requestMatchers("/system/**").hasRole("SYSTEM_ENGINEER")
@@ -47,13 +50,17 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
+  // Limit permissive localhost CORS to the dev profile; in prod use application-prod.yaml properties
   @Bean
+  @Profile("dev")
   public CorsConfigurationSource corsConfigurationSource() {
     var cfg = new CorsConfiguration();
-    cfg.setAllowedOrigins(List.of("http://localhost:3000"));
-    cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+    // Allow everything in DEV (for ease of local frontend integration)
+    cfg.setAllowedOriginPatterns(List.of("*"));
+    cfg.setAllowedMethods(List.of("*"));
     cfg.setAllowedHeaders(List.of("*"));
     cfg.setAllowCredentials(true);
+    cfg.setMaxAge(3600L);
     var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", cfg);
     return source;
