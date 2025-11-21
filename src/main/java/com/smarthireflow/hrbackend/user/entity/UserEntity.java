@@ -32,8 +32,8 @@ public class UserEntity {
     @Column(length = 512)
     private String address;
 
-    @Lob
     @Basic(fetch = FetchType.LAZY)
+    @Column(name = "avatar", columnDefinition = "bytea")
     @JsonIgnore
     private byte[] avatar;
 

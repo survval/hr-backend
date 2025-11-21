@@ -16,6 +16,10 @@ public class UserService {
         this.repo = repo;
     }
 
+    public Optional<UserEntity> findOne(Long userId) {
+      return repo.findById(userId);
+    }
+
     public Optional<UserEntity> findByEmail(String email) {
         return repo.findByEmail(email);
     }
@@ -34,5 +38,10 @@ public class UserService {
 
     public List<UserEntity> findAll() {
         return repo.findAll();
+    }
+
+    public UserEntity findOneOrThrow(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
     }
 }

@@ -65,15 +65,16 @@ public class ProfileController {
     @PutMapping("/profile")
     @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER','SYSTEM_ENGINEER')")
     public ResponseEntity<?> updateProfile(@RequestBody Map<String, Object> payload, Authentication auth) {
-        if (payload.containsKey("employeeId")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "employeeId cannot be updated"));
-        }
-        UserEntity user = userService.findByEmail(auth.getName()).orElseThrow();
-        // Update allowed fields
+
+        // ALWAYS update the logged-in user, not the one from body
+        UserEntity user = userService.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         if (payload.containsKey("fullName")) user.setFullName(stringVal(payload.get("fullName")));
         if (payload.containsKey("department")) user.setDepartment(stringVal(payload.get("department")));
         if (payload.containsKey("phone")) user.setPhone(stringVal(payload.get("phone")));
         if (payload.containsKey("address")) user.setAddress(stringVal(payload.get("address")));
+
         if (payload.containsKey("email")) {
             String newEmail = stringVal(payload.get("email"));
             if (!newEmail.equalsIgnoreCase(user.getEmail())) {
@@ -82,8 +83,9 @@ public class ProfileController {
                 user.setEmail(newEmail);
             }
         }
-        user = userService.save(user);
-        return ResponseEntity.ok(user);
+
+        // avatar must NOT be touched here — only via file upload endpoint
+        return ResponseEntity.ok(userService.save(user));
     }
 
     @PostMapping(value = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
