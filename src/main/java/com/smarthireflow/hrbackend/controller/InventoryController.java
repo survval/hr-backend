@@ -72,4 +72,15 @@ public class InventoryController {
     public ResponseEntity<InventoryItem> assign(@PathVariable Long itemId, @PathVariable Long employeeId) {
         return ResponseEntity.ok(inventoryService.assignItem(itemId, employeeId));
     }
+
+    /**
+     * Return an inventory item from its current assignee.  The item will be
+     * marked as RETURNED and its assignment information cleared.  Only
+     * managers or system engineers can perform this action.
+     */
+    @PatchMapping("/admin/inventory/{itemId}/return")
+    @PreAuthorize("hasAnyRole('MANAGER','SYSTEM_ENGINEER')")
+    public ResponseEntity<InventoryItem> returnItem(@PathVariable Long itemId) {
+        return ResponseEntity.ok(inventoryService.returnItem(itemId));
+    }
 }

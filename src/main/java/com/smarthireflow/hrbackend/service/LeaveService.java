@@ -2,9 +2,7 @@ package com.smarthireflow.hrbackend.service;
 
 import com.smarthireflow.hrbackend.model.*;
 import com.smarthireflow.hrbackend.repository.LeaveRequestRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,7 +31,7 @@ public class LeaveService {
      */
     public LeaveRequest createLeaveRequest(Long employeeId, LeaveType type, LocalDate startDate, LocalDate endDate, String reason) {
         Employee employee = employeeService.findById(employeeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
         LeaveRequest request = new LeaveRequest(employee, type, startDate, endDate, reason);
         return leaveRequestRepository.save(request);
     }

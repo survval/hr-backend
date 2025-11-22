@@ -2,9 +2,7 @@ package com.smarthireflow.hrbackend.service;
 
 import com.smarthireflow.hrbackend.model.*;
 import com.smarthireflow.hrbackend.repository.AttendanceRecordRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,7 +35,7 @@ public class AttendanceService {
      */
     public AttendanceRecord clockIn(Long employeeId) {
         Employee employee = employeeService.findById(employeeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
         LocalDate today = LocalDate.now();
         List<AttendanceRecord> todays = attendanceRecordRepository.findByEmployeeAndDate(employee, today);
         if (!todays.isEmpty()) {
@@ -56,11 +54,11 @@ public class AttendanceService {
      */
     public AttendanceRecord clockOut(Long employeeId) {
         Employee employee = employeeService.findById(employeeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
         LocalDate today = LocalDate.now();
         List<AttendanceRecord> todays = attendanceRecordRepository.findByEmployeeAndDate(employee, today);
         if (todays.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No attendance record found for employee to clock out");
+            throw new IllegalStateException("No attendance record found for employee to clock out");
         }
         AttendanceRecord record = todays.get(0);
         record.setClockOutTime(LocalDateTime.now());

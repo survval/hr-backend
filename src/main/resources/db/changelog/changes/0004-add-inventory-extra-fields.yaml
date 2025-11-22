@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0004-add-inventory-extra-fields
+      author: junie
+      changes:
+        - addColumn:
+            tableName: inventory_items
+            columns:
+              - column:
+                  name: serial_number
+                  type: VARCHAR(255)
+              - column:
+                  name: cost
+                  type: NUMERIC(12,2)
+              - column:
+                  name: assigned_date
+                  type: DATE
+              - column:
+                  name: return_date
+                  type: DATE
+              - column:
+                  name: warranty
+                  type: VARCHAR(255)
+              - column:
+                  name: notes
+                  type: VARCHAR(2000)
+              - column:
+                  name: value
+                  type: NUMERIC(12,2)

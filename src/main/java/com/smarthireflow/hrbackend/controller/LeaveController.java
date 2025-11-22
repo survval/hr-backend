@@ -4,6 +4,13 @@ import com.smarthireflow.hrbackend.model.LeaveRequest;
 import com.smarthireflow.hrbackend.model.LeaveStatus;
 import com.smarthireflow.hrbackend.model.LeaveType;
 import com.smarthireflow.hrbackend.service.LeaveService;
+import com.smarthireflow.hrbackend.user.service.UserService;
+import com.smarthireflow.hrbackend.user.entity.UserEntity;
+import com.smarthireflow.hrbackend.model.Employee;
+import com.smarthireflow.hrbackend.repository.EmployeeRepository;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +28,13 @@ import java.util.List;
 public class LeaveController {
 
     private final LeaveService leaveService;
+    private final UserService userService;
+    private final EmployeeRepository employeeRepository;
 
-    public LeaveController(LeaveService leaveService) {
+    public LeaveController(LeaveService leaveService, UserService userService, EmployeeRepository employeeRepository) {
         this.leaveService = leaveService;
+        this.userService = userService;
+        this.employeeRepository = employeeRepository;
     }
 
     /**
@@ -32,23 +43,50 @@ public class LeaveController {
      * deriving the ID from the authenticated principal.  The
      * start and end dates should be provided in ISO format (yyyy-MM-dd).
      */
+    /**
+     * Submit a new leave request.  This endpoint derives the current
+     * employee from the authenticated user's email rather than requiring
+     * the employeeId in the request.  The start and end dates should be
+     * provided in ISO format (yyyy-MM-dd).
+     */
     @PostMapping("/employee/leaves")
     @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER','SYSTEM_ENGINEER')")
-    public ResponseEntity<LeaveRequest> createLeave(@RequestParam Long employeeId,
+    public ResponseEntity<LeaveRequest> createLeave(Authentication auth,
                                                     @RequestParam LeaveType type,
                                                     @RequestParam LocalDate startDate,
                                                     @RequestParam LocalDate endDate,
                                                     @RequestParam(required = false) String reason) {
-        return ResponseEntity.ok(leaveService.createLeaveRequest(employeeId, type, startDate, endDate, reason));
+        // Resolve the current user from authentication
+        UserEntity user = userService.findByEmail(auth.getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        // Look up the Employee record by email
+        Employee employee = employeeRepository.findByEmail(user.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+        LeaveRequest req = leaveService.createLeaveRequest(employee.getId(), type, startDate, endDate, reason);
+        return ResponseEntity.ok(req);
     }
 
     /**
-     * Get all leave requests for a specific employee.
+     * Get all leave requests for a specific employee id.
+     * System engineers and managers may view other employees' leaves.
      */
     @GetMapping("/employee/leaves/{employeeId}")
     @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER','SYSTEM_ENGINEER')")
     public ResponseEntity<List<LeaveRequest>> getLeavesForEmployee(@PathVariable Long employeeId) {
         return ResponseEntity.ok(leaveService.findByEmployee(employeeId));
+    }
+
+    /**
+     * Get leave requests for the authenticated employee.
+     */
+    @GetMapping("/employee/leaves")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER','SYSTEM_ENGINEER')")
+    public ResponseEntity<List<LeaveRequest>> getMyLeaves(Authentication auth) {
+        UserEntity user = userService.findByEmail(auth.getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Employee employee = employeeRepository.findByEmail(user.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+        return ResponseEntity.ok(leaveService.findByEmployee(employee.getId()));
     }
 
     /**

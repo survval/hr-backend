@@ -1,6 +1,8 @@
 package com.smarthireflow.hrbackend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Entity representing a single employee.  In the existing
@@ -12,6 +14,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "employees")
+@Getter @Setter
 public class Employee {
 
     @Id

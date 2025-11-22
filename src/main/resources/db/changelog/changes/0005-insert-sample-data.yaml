@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0005-insert-sample-data
+      author: junie
+      changes:
+        - sqlFile:
+            path: insert_sample_data.sql
+            relativeToChangelogFile: true
+            encoding: utf8
+            splitStatements: true
+            stripComments: true

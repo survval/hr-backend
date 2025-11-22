@@ -17,5 +17,12 @@ import java.util.List;
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, Long> {
     List<InventoryItem> findByStatus(InventoryStatus status);
     List<InventoryItem> findByCategory(String category);
-    List<InventoryItem> findByAssignedTo(Employee employee);
+
+    /**
+     * Find all items currently assigned to a given employee.
+     *
+     * @param assignedTo the employee
+     * @return all inventory items assigned to that employee
+     */
+    List<InventoryItem> findByAssignedTo(Employee assignedTo);
 }

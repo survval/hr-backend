@@ -5,3 +5,7 @@ databaseChangeLog:
       file: db/changelog/changes/0002-create-domain-tables.yaml
   - include:
       file: db/changelog/changes/0003-add-profile-fields.yaml
+  - include:
+      file: db/changelog/changes/0004-add-inventory-extra-fields.yaml
+  - include:
+      file: db/changelog/changes/0005-insert-sample-data.yaml

@@ -3,6 +3,8 @@ package com.smarthireflow.hrbackend.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Entity representing a leave request submitted by an employee.

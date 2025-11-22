@@ -2,11 +2,8 @@ package com.smarthireflow.hrbackend.controller;
 
 import com.smarthireflow.hrbackend.model.Employee;
 import com.smarthireflow.hrbackend.service.EmployeeService;
-import com.smarthireflow.hrbackend.user.entity.UserEntity;
-import com.smarthireflow.hrbackend.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +18,9 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final UserService userService;
 
-    public EmployeeController(EmployeeService employeeService, UserService userService) {
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        this.userService = userService;
     }
 
     /**
@@ -71,20 +66,5 @@ public class EmployeeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         employeeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    // Merged from former web.EmployeeController
-    @GetMapping("/employee/profile")
-    @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER','SYSTEM_ENGINEER')")
-    public UserEntity getOwnProfile(Authentication auth) {
-        String email = auth.getName();
-        return userService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    @PostMapping("/employee/attendance/swipe-in")
-    @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER','SYSTEM_ENGINEER')")
-    public String swipeIn() {
-        return "Swipe in recorded";
     }
 }
